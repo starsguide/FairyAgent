@@ -4,4 +4,164 @@
   <artifactId>FairyAgent</artifactId>
   <version>1.0.A-FrameWork</version>
   <name>FairyAgent</name>
+    <build>
+    <sourceDirectory>src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      <plugin>
+      	<groupId>org.apache.maven.plugins</groupId>
+      	<artifactId>maven-war-plugin</artifactId>
+      	<version>3.1</version>
+      	<configuration>
+      		<warName>${project.artifactId}</warName>
+<!--       		spring profile -->
+			<webResources>
+				<resource>
+					<filtering>true</filtering>
+					<directory>src/main/resources</directory>
+					<includes>
+						<include>**/web.xml</include>
+					</includes>
+				</resource>
+			</webResources>
+			<warSourceDirectory>WebContent</warSourceDirectory>
+			<webXml>WebContent/WEB-INF/web.xml</webXml>
+      	</configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <profiles>
+  	<profile>
+  		<id>development</id>
+  		<properties>
+  			<profiles.active>development</profiles.active>
+  		</properties>
+  		<build>  
+                <plugins>  
+                    <plugin>  
+                        <groupId>org.codehaus.mojo</groupId>  
+                        <artifactId>tomcat-maven-plugin</artifactId>  
+                        <version>1.1</version>  
+                        <configuration>  
+                            <!-- 配置项目自动发布服务器 -->  
+                            <url>http://localhost:8080/manager/text</url>  
+                            <path>/xmj-manager</path>  
+                            <server>Tomcat</server>  
+                            <warFile>target/${project.artifactId}.war</warFile>  
+                        </configuration>  
+                    </plugin>  
+                </plugins>  
+            </build> 
+  	</profile>
+  </profiles>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.alipay</groupId>
+  		<artifactId>taobao-sdk-java-online_standard</artifactId>
+  		<version>20140710</version>
+  	</dependency>
+<!--   	spring -->
+  	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-context</artifactId>
+		<version>4.0.5.RELEASE</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-tx</artifactId>
+		<version>4.0.5.RELEASE</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-orm</artifactId>
+		<version>4.0.5.RELEASE</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-webmvc</artifactId>
+		<version>4.0.5.RELEASE</version>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-context-support</artifactId>
+		<version>4.0.5.RELEASE</version>
+	</dependency>
+	
+<!-- 	hibernate -->
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-core</artifactId>
+		<version>4.3.0.Final</version>
+	</dependency>
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-entitymanager</artifactId>
+		<version>4.3.0.Final</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>ojdbc</groupId>
+		<artifactId>ojdbc</artifactId>
+		<version>14</version>
+	</dependency>
+	<dependency>
+		<groupId>commons-dbcp</groupId>
+		<artifactId>commons-dbcp</artifactId>
+		<version>1.4</version>
+	</dependency>
+<!-- 	<dependency> -->
+<!-- 		<groupId>commons-beanutils</groupId> -->
+<!-- 		<artifactId>commons-beanutils</artifactId> -->
+<!-- 		<version>1.9.0</version> -->
+<!-- 	</dependency> -->
+	<dependency>
+		<groupId>net.sf.dozer</groupId>
+		<artifactId>dozer</artifactId>
+		<version>5.4.0</version>
+	</dependency>
+	
+	
+	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>jstl</artifactId>
+		<version>1.2</version>
+	</dependency>
+	<dependency>
+		<groupId>javax.mail</groupId>
+		<artifactId>mail</artifactId>
+		<version>1.4.7</version>
+	</dependency>
+	<dependency>
+		<groupId>com.google.code.gson</groupId>
+		<artifactId>gson</artifactId>
+		<version>2.2.4</version>
+	</dependency>
+	<dependency>
+		<groupId>org.aspectj</groupId>
+		<artifactId>aspectjweaver</artifactId>
+		<version>1.6.8</version>
+	</dependency>
+	<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+		<version>1.2.17</version>
+	</dependency>
+	<dependency>
+		<groupId>quartz</groupId>
+		<artifactId>quartz</artifactId>
+		<version>1.5.2</version>
+	</dependency>
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.11</version>
+	</dependency>
+  </dependencies>
 </project>

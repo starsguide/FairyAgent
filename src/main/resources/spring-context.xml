@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:jpa="http://www.springframework.org/schema/jpa"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-3.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd ">
+
+<!-- 	<context:component-scan base-package="com.starsguide" /> -->
+<!-- 	<task:annotation-driven/> -->
+	
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
+		<property name="packagesToScan" value="com.starsguide.dao" />
+		<property name="jpaProperties">
+			<props>
+                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>  
+                <prop key="hibernate.show_sql">true</prop>  
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+            </props>
+		</property>
+	</bean>
+    
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+    	<property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+    
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+    	<tx:attributes>
+    		<tx:method name="save*" propagation="REQUIRED" />
+    		<tx:method name="update*" propagation="REQUIRED" />
+    		<tx:method name="delete*" propagation="REQUIRED" />
+    		<tx:method name="*" read-only="true" />
+    	</tx:attributes>
+    </tx:advice>
+    
+    <aop:config>
+    	<aop:pointcut id="servicePointcut" expression="execution(* com.starsguide.service.*.*(..))" />
+    	<aop:advisor advice-ref="txAdvice" pointcut-ref="servicePointcut" />
+    </aop:config>
+	
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="defaultAutoCommit" value="false" />
+	</bean>
+	
+	<bean id="hibernateJpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">  
+        <property name="databasePlatform" value="${jpa.dialect}" />
+    </bean>
+    
+	<bean class="com.starsguide.common.ApplicationProperties">
+		<property name="URL" value="${repository.url}" />
+		<property name="APP_KEY" value="${repository.app.key}" />
+		<property name="APP_SECRET" value="${repository.app.secret}" />
+		<property name="AUTH_URL" value="${auth.url}" />
+	</bean>
+	
+	<bean id="msgHandleMap" class="java.util.HashMap" lazy-init="true">
+		<constructor-arg>
+			<map>
+				<entry key="taobao_item_ItemDownshelf" value-ref="itemMsgHandle" />
+				<entry key="taobao_trade_TradeCreate" value-ref="tradeMsgHandle" />
+			</map>
+		</constructor-arg>
+	</bean>
+	
+	<context:component-scan base-package="com.starsguide" />
+		
+	<beans profile="development">
+		<context:property-placeholder ignore-unresolvable="false" location="classpath:sandbox/datasource.properties" />
+		<bean id="refreshTokenJob" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+			<property name="targetObject">
+				<bean class="com.starsguide.task.RefreshTokenJob" />
+			</property>
+			<property name="targetMethod" value="execute" />
+			<property name="concurrent" value="false"></property>
+		</bean>
+		
+		<bean id="simpleTigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+			<property name="jobDetail" ref="refreshTokenJob" />
+			<property name="startDelay" value="0" />
+			<property name="repeatInterval" value="5000" />
+		</bean>
+		
+<!-- 		<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> -->
+<!-- 			<property name="triggers"> -->
+<!-- 				<list> -->
+<!-- 					<ref bean="simpleTigger" /> -->
+<!-- 				</list> -->
+<!-- 			</property> -->
+<!-- 		</bean> -->
+	</beans>
+</beans>
