@@ -10,7 +10,7 @@
 	<form action="authority">  
 		用户名：<input type="text" name="userName"  /><br/>  
 		密码：<input type="password" name="password"  /><br/>  
-	    <input type="submit" value="ç»å½" />  
+	    <input type="submit" value="提交" />  
 	</form>
 </body>
 </html>
